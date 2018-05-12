@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Post;
 use App\Http\Resources\Post as PostResource;
+use App\Http\Resources\User;
 use DB;
 
 class PostsControllerJson extends Controller
@@ -31,6 +32,7 @@ class PostsControllerJson extends Controller
 
         //Get Posts
         $posts = Post::orderBy('created_at','desc')->paginate(3);
+        //return $posts;
 
         //Return collection of post as a resource
         return PostResource::collection($posts);

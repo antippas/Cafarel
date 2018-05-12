@@ -66606,6 +66606,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -66613,9 +66625,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             posts: [],
             post: {
                 id: '',
+                user_id: '',
                 title: '',
                 body: '',
-                date: '',
+                created_at: "",
+                updated_at: "",
                 cover_image: ''
             },
             post_id: '',
@@ -66627,25 +66641,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.fetchPosts();
     },
 
-
+    /*
+    methods: {
+        fetchPosts(page_url) {
+            let vm = this;
+            page_url = page_url || 'http://localhost:8000/api/posts';
+            this.axios.get(page_url)
+            .then(res => {
+                this.posts = res.data.data
+                vm.makePagination(res.meta, res.links);
+            })
+        },
+        makePagination: function(data){
+            let pagination = {
+                current_page: data.current_page,
+                last_page: data.last_page,
+                next_page_url: data.next_page_url,
+                prev_page_url: data.prev_page_url
+            }
+            this.$set('pagination', pagination)
+        }
+    }
+    */
     methods: {
         fetchPosts: function fetchPosts(page_url) {
             var _this = this;
 
             var vm = this;
             page_url = page_url || 'http://localhost:8000/api/posts';
-            this.axios.get(page_url).then(function (res) {
-                _this.posts = res.data.data;
+            fetch(page_url).then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                _this.posts = res.data;
                 vm.makePagination(res.meta, res.links);
             }).catch(function (err) {
                 return console.log(err);
             });
-            /*
-            fetch('http://localhost:8000/api/posts')
-                .then(res => res.json())
-                .then(res=> {
-                    this.posts = res.data;
-                });*/
         },
         makePagination: function makePagination(meta, links) {
             var pagination = {
@@ -66656,8 +66687,67 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             };
 
             this.pagination = pagination;
+        },
+        deletePost: function deletePost(id) {
+            var _this2 = this;
+
+            if (confirm('Êtes-vous sûr ?')) {
+                fetch('http://localhost:8000/api/post/' + id, {
+                    method: 'delete'
+                }).then(function (res) {
+                    return res.json();
+                }).then(function (data) {
+                    alert('Bar supprimé');
+                    _this2.fetchPosts();
+                }).catch(function (err) {
+                    return console.log(err);
+                });
+            }
+        },
+        addPost: function addPost() {
+            var _this3 = this;
+
+            if (this.edit === false) {
+                // Add
+                fetch('http://localhost:8000/api/posts', {
+                    method: 'post',
+                    body: JSON.stringify(this.post),
+                    headers: {
+                        'content-type': 'application/json'
+                    }
+                }).then(function (res) {
+                    return res.json();
+                }).then(function (data) {
+                    //clear the form
+                    _this3.post.title = '';
+                    _this3.post.body = '';
+                    alert('Bar Ajouté !');
+                    _this3.fetchPosts();
+                }).catch(function (err) {
+                    return console.log(err);
+                });
+            } else {
+                // Update
+                fetch('api/http://localhost:8000/api/posts', {
+                    method: 'put',
+                    body: JSON.stringify(this.post),
+                    headers: {
+                        'content-type': 'application/json'
+                    }
+                }).then(function (res) {
+                    return res.json();
+                }).then(function (data) {
+                    _this3.post.title = '';
+                    _this3.post.body = '';
+                    alert('Bar mis à jour !');
+                    _this3.fetchPosts();
+                }).catch(function (err) {
+                    return console.log(err);
+                });
+            }
         }
     }
+
 });
 
 /***/ }),
@@ -66673,11 +66763,148 @@ var render = function() {
     [
       _c("h2", [_vm._v("BARS")]),
       _vm._v(" "),
+      _c(
+        "form",
+        {
+          staticClass: "mb-3",
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.addPost($event)
+            }
+          }
+        },
+        [
+          _c("div", { staticClass: "form-group" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.post.title,
+                  expression: "post.title"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "Title" },
+              domProps: { value: _vm.post.title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.post, "title", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group" }, [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.post.body,
+                  expression: "post.body"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "Body" },
+              domProps: { value: _vm.post.body },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.post, "body", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-light btn-block",
+              attrs: { type: "submit" }
+            },
+            [_vm._v("Save")]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c("nav", { attrs: { "aria-label": "Page navigation example" } }, [
+        _c("ul", { staticClass: "pagination" }, [
+          _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: [{ disabled: !_vm.pagination.prev_page_url }]
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      _vm.fetchPosts(_vm.pagination.prev_page_url)
+                    }
+                  }
+                },
+                [_vm._v("Previous")]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("li", { staticClass: "page-item disabled" }, [
+            _c(
+              "a",
+              { staticClass: "page-link text-dark", attrs: { href: "#" } },
+              [
+                _vm._v(
+                  "Page " +
+                    _vm._s(_vm.pagination.current_page) +
+                    " à " +
+                    _vm._s(_vm.pagination.last_page)
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: [{ disabled: !_vm.pagination.next_page_url }]
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      _vm.fetchPosts(_vm.pagination.next_page_url)
+                    }
+                  }
+                },
+                [_vm._v("Next")]
+              )
+            ]
+          )
+        ])
+      ]),
+      _vm._v(" "),
       _vm._l(_vm.posts, function(post) {
         return _c("div", { key: post.id, staticClass: "card card-body" }, [
           _c("div", { staticClass: "row" }, [
             _c("div", { staticClass: "col-md-4 col-sm-4" }, [
               _c("img", {
+                staticStyle: { width: "100%" },
                 attrs: {
                   src:
                     "http://localhost/lsapp/public/storage/cover_images/" +
@@ -66691,46 +66918,31 @@ var render = function() {
               _vm._v(" "),
               _c("p", [_vm._v(_vm._s(post.body))]),
               _vm._v(" "),
-              _c("small", [_vm._v("Créé le " + _vm._s(post.date.filters))])
+              _c("small", [_vm._v("Créé le " + _vm._s(post.created_at))]),
+              _vm._v(" "),
+              _c("hr"),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  on: {
+                    click: function($event) {
+                      _vm.deletePost(post.id)
+                    }
+                  }
+                },
+                [_vm._v("Delete")]
+              )
             ])
           ])
         ])
-      }),
-      _vm._v(" "),
-      _c("nav", { attrs: { "aria-label": "Page navigation example" } }, [
-        _c("ul", { staticClass: "pagination" }, [
-          _c(
-            "li",
-            {
-              staticClass: "page-item",
-              class: [{ disabled: !_vm.pagination.prev_page_url }]
-            },
-            [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("Previous")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _vm._m(0)
-        ])
-      ])
+      })
     ],
     2
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "page-item" }, [
-      _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-        _vm._v("Next")
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

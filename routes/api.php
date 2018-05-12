@@ -13,13 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
+/*
 //Enable identification and relation model
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+*/
 
 //Index page
 Route::get('/', "PagesControllerJson@index");
+
+//list of users
+Route::get('users', 'DashboardControllerJson@index');
 
 //list of posts
 Route::get('posts', 'PostsControllerJson@index');

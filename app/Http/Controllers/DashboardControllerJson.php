@@ -14,7 +14,7 @@ class DashboardControllerJson extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
     /**
@@ -24,8 +24,8 @@ class DashboardControllerJson extends Controller
      */
     public function index()
     {
-        $user_id = auth()->user()->id;
-        $user = User::find($user_id);
+        //$user_id = auth()->user()->id;
+        //$user = User::find($user_id);
         return $user->posts;
     }
 }

@@ -16,8 +16,8 @@
     <body>
         <div id="app">
             <navbar></navbar>
-            <div class="container">
-                <posts></posts>
+            <div>
+                <index></index>
             </div>
         </div>
 

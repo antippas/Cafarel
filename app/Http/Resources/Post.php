@@ -19,7 +19,7 @@ class Post extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'body' => $this->body,
-            'date' => $this->created_at->format('Y-m-d\TH:i:s\Z'),
+            'date' => $this->created_at->format('Y-m-d'),
             'image' => $this->cover_image,
             'user_id' => $this->user_id,
         ];

@@ -28,8 +28,6 @@ class PostsControllerJson extends Controller
      */
     public function index()
     {
-        //return response()->json (Post::all());
-
         //Get Posts
         $posts = Post::orderBy('created_at','desc')->paginate(3);
         //return $posts;

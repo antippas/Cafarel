@@ -22,6 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Index page
 Route::get('/', "PagesControllerJson@index");
+Route::get('/bar', "PagesControllerJson@bar");
 
 //list of users
 Route::get('users', 'DashboardControllerJson@index');
@@ -30,13 +31,13 @@ Route::get('users', 'DashboardControllerJson@index');
 Route::get('posts', 'PostsControllerJson@index');
 
 //Single post
-Route::get('post/{id}','PostsControllerJson@show');
+Route::get('posts/{id}','PostsControllerJson@show');
 
 //Create a new post
-Route::post('post','PostsControllerJson@store');
+Route::post('posts','PostsControllerJson@store');
 
 //Update the post
-Route::put('post/{id}','PostsControllerJson@update');
+Route::put('posts/{id}','PostsControllerJson@update');
 
 //Destroy a post
-Route::delete('post/{id}','PostsControllerJson@destroy');
+Route::delete('posts/{id}','PostsControllerJson@destroy');

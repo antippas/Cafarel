@@ -8,15 +8,11 @@
             <li class="nav-item active">
               <a class="nav-link" href="http://localhost/lsapp/public/">Home <span class="sr-only">(current)</span></a>
             </li>
-            <!--
-            <li class="nav-item">
-              <a class="nav-link" href="http://localhost/lsapp/public/about">À Propos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="http://localhost/lsapp/public/services">Services</a>
-            </li>-->
             <li class="nav-item">
               <a class="nav-link" href="http://localhost/lsapp/public/posts">BARS</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://localhost:8000/api">Style Vue.js</a>
             </li>
           </ul>
           <!-- Right Side Of Navbar -->

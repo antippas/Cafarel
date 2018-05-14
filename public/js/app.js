@@ -30384,6 +30384,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_router__ = __webpack_require__(162);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Index_vue__ = __webpack_require__(177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_Index_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Posts_vue__ = __webpack_require__(167);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Posts_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_Posts_vue__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -30397,6 +30401,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 __WEBPACK_IMPORTED_MODULE_2_axios___default.a.defaults.baseURL = "http://localhost:8000/api";
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_axios___default.a, __WEBPACK_IMPORTED_MODULE_2_axios___default.a);
 
+
+
+
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_3_vue_router__["a" /* default */]);
 
 __webpack_require__(163);
@@ -30408,10 +30415,24 @@ __webpack_require__(163);
  */
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('posts', __webpack_require__(167));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('index', __webpack_require__(177));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('navbar', __webpack_require__(170));
 
+var router = new __WEBPACK_IMPORTED_MODULE_3_vue_router__["a" /* default */]({
+  routes: [{
+    path: "/",
+    name: "Home",
+    component: __WEBPACK_IMPORTED_MODULE_4__components_Index_vue___default.a
+  }, {
+    path: "/posts",
+    name: "Bar",
+    component: __WEBPACK_IMPORTED_MODULE_5__components_Posts_vue___default.a
+  }]
+});
+
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
-  el: '#app'
+  el: '#app',
+  router: router
 });
 
 /***/ }),
@@ -66618,6 +66639,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -66625,129 +66669,78 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             posts: [],
             post: {
                 id: '',
-                user_id: '',
+                user_id: '1',
                 title: '',
                 body: '',
-                created_at: "",
-                updated_at: "",
-                cover_image: ''
+                date: '',
+                image: ''
             },
             post_id: '',
             pagination: {},
-            edit: false
+            edit: false,
+            showForm: false
         };
     },
     created: function created() {
         this.fetchPosts();
     },
 
-    /*
+
     methods: {
-        fetchPosts(page_url) {
-            let vm = this;
-            page_url = page_url || 'http://localhost:8000/api/posts';
-            this.axios.get(page_url)
-            .then(res => {
-                this.posts = res.data.data
-                vm.makePagination(res.meta, res.links);
-            })
-        },
-        makePagination: function(data){
-            let pagination = {
-                current_page: data.current_page,
-                last_page: data.last_page,
-                next_page_url: data.next_page_url,
-                prev_page_url: data.prev_page_url
-            }
-            this.$set('pagination', pagination)
-        }
-    }
-    */
-    methods: {
-        fetchPosts: function fetchPosts(page_url) {
+        fetchPosts: function fetchPosts() {
             var _this = this;
 
-            var vm = this;
-            page_url = page_url || 'http://localhost:8000/api/posts';
-            fetch(page_url).then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                _this.posts = res.data;
-                vm.makePagination(res.meta, res.links);
-            }).catch(function (err) {
-                return console.log(err);
+            var uri = "http://localhost:8000/api/posts";
+            this.axios.get(uri).then(function (response) {
+                _this.posts = response.data;
+                _this.makePagination(_this.posts);
             });
         },
-        makePagination: function makePagination(meta, links) {
-            var pagination = {
-                current_page: meta.current_page,
-                last_page: meta.last_page,
-                next_page_url: links.next,
-                prev_page_url: links.prev
-            };
-
-            this.pagination = pagination;
+        addPost: function addPost() {
+            if (this.edit == false) {
+                var uri = "http://localhost:8000/api/posts";
+                this.axios.post(uri, this.post);
+                alert('Bar ajouté');
+                this.post = {
+                    user_id: 1
+                };
+                this.fetchPosts();
+            }
+            //update the post
+            else {
+                    var _uri = "http://localhost:8000/api/posts/" + this.post.id;
+                    this.axios.put(_uri, this.post).then(this.fetchPosts());
+                    alert('Note Modifiée');
+                    this.post = {
+                        user_id: 1
+                    };
+                    this.fetchPosts();
+                    this.edit = false;
+                }
+        },
+        updatePost: function updatePost(post) {
+            //duplicate the object to avoid the instant update
+            this.post = JSON.parse(JSON.stringify(post));
+            this.edit = true;
+            this.showForm = true;
         },
         deletePost: function deletePost(id) {
-            var _this2 = this;
-
-            if (confirm('Êtes-vous sûr ?')) {
-                fetch('http://localhost:8000/api/post/' + id, {
-                    method: 'delete'
-                }).then(function (res) {
-                    return res.json();
-                }).then(function (data) {
-                    alert('Bar supprimé');
-                    _this2.fetchPosts();
-                }).catch(function (err) {
-                    return console.log(err);
-                });
+            if (confirm('Voulez-vous vraiment supprimer le bar?')) {
+                var uri = 'http://localhost:8000/api/posts/' + id;
+                this.axios.delete(uri);
+                this.fetchPosts();
             }
         },
-        addPost: function addPost() {
-            var _this3 = this;
-
-            if (this.edit === false) {
-                // Add
-                fetch('http://localhost:8000/api/posts', {
-                    method: 'post',
-                    body: JSON.stringify(this.post),
-                    headers: {
-                        'content-type': 'application/json'
-                    }
-                }).then(function (res) {
-                    return res.json();
-                }).then(function (data) {
-                    //clear the form
-                    _this3.post.title = '';
-                    _this3.post.body = '';
-                    alert('Bar Ajouté !');
-                    _this3.fetchPosts();
-                }).catch(function (err) {
-                    return console.log(err);
-                });
-            } else {
-                // Update
-                fetch('api/http://localhost:8000/api/posts', {
-                    method: 'put',
-                    body: JSON.stringify(this.post),
-                    headers: {
-                        'content-type': 'application/json'
-                    }
-                }).then(function (res) {
-                    return res.json();
-                }).then(function (data) {
-                    _this3.post.title = '';
-                    _this3.post.body = '';
-                    alert('Bar mis à jour !');
-                    _this3.fetchPosts();
-                }).catch(function (err) {
-                    return console.log(err);
-                });
-            }
+        makePagination: function makePagination(posts) {
+            var pagination = {
+                current_page: posts.meta.current_page,
+                last_page: posts.meta.last_page,
+                next_page_url: posts.links.next,
+                prev_page_url: posts.links.prev
+            };
+            this.pagination = pagination;
         }
     }
-
 });
 
 /***/ }),
@@ -66761,78 +66754,39 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("h2", [_vm._v("BARS")]),
+      _c("h2", { staticClass: "m-2 mt-4", attrs: { id: "formulaire" } }, [
+        _vm._v("Bars")
+      ]),
       _vm._v(" "),
-      _c(
-        "form",
-        {
-          staticClass: "mb-3",
-          on: {
-            submit: function($event) {
-              $event.preventDefault()
-              return _vm.addPost($event)
-            }
-          }
-        },
-        [
-          _c("div", { staticClass: "form-group" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.post.title,
-                  expression: "post.title"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { type: "text", placeholder: "Title" },
-              domProps: { value: _vm.post.title },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+      !_vm.showForm
+        ? _c("div", [
+            _c(
+              "div",
+              {
+                staticClass: "btn btn-secondary m-2",
+                on: {
+                  click: function($event) {
+                    _vm.showForm = !_vm.showForm
                   }
-                  _vm.$set(_vm.post, "title", $event.target.value)
                 }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group" }, [
-            _c("textarea", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.post.body,
-                  expression: "post.body"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { type: "text", placeholder: "Body" },
-              domProps: { value: _vm.post.body },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+              },
+              [_vm._v("Ajouter")]
+            )
+          ])
+        : _c("div", [
+            _c(
+              "div",
+              {
+                staticClass: "btn btn-secondary m-2",
+                on: {
+                  click: function($event) {
+                    _vm.showForm = !_vm.showForm
                   }
-                  _vm.$set(_vm.post, "body", $event.target.value)
                 }
-              }
-            })
+              },
+              [_vm._v("Annuler")]
+            )
           ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-light btn-block",
-              attrs: { type: "submit" }
-            },
-            [_vm._v("Save")]
-          )
-        ]
-      ),
       _vm._v(" "),
       _c("nav", { attrs: { "aria-label": "Page navigation example" } }, [
         _c("ul", { staticClass: "pagination" }, [
@@ -66854,7 +66808,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("Previous")]
+                [_vm._v("Précedent")]
               )
             ]
           ),
@@ -66892,14 +66846,101 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("Next")]
+                [_vm._v("Suivant")]
               )
             ]
           )
         ])
       ]),
       _vm._v(" "),
-      _vm._l(_vm.posts, function(post) {
+      _vm.showForm
+        ? _c("div", { staticClass: "card m-4" }, [
+            _vm.edit
+              ? _c("div", [
+                  _c("div", { staticClass: "card-header" }, [
+                    _vm._v("Vous modifiez le bar: "),
+                    _c("strong", [_vm._v(" " + _vm._s(_vm.post.title) + " ")])
+                  ])
+                ])
+              : _c("div", [
+                  _c("div", { staticClass: "card-header" }, [
+                    _vm._v("Ajouter un bar")
+                  ])
+                ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _c("div", { staticClass: "form-group" }, [
+                _c("label", { attrs: { for: "title" } }, [_vm._v("Titre")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.post.title,
+                      expression: "post.title"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "title",
+                    placeholder: "Entrez le titre"
+                  },
+                  domProps: { value: _vm.post.title },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.post, "title", $event.target.value)
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group" }, [
+                _c("label", { attrs: { for: "body" } }, [
+                  _vm._v("Description")
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.post.body,
+                      expression: "post.body"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "body",
+                    placeholder: "Description"
+                  },
+                  domProps: { value: _vm.post.body },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.post, "body", $event.target.value)
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "btn btn-info", on: { click: _vm.addPost } },
+                [_vm._v("Enregistrer")]
+              )
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._l(_vm.posts.data, function(post) {
         return _c("div", { key: post.id, staticClass: "card card-body" }, [
           _c("div", { staticClass: "row" }, [
             _c("div", { staticClass: "col-md-4 col-sm-4" }, [
@@ -66918,12 +66959,28 @@ var render = function() {
               _vm._v(" "),
               _c("p", [_vm._v(_vm._s(post.body))]),
               _vm._v(" "),
-              _c("small", [_vm._v("Créé le " + _vm._s(post.created_at))]),
+              _c("hr"),
+              _vm._v(" "),
+              _c("small", [_vm._v("bar crée le: " + _vm._s(post.date) + " ")]),
               _vm._v(" "),
               _c("hr"),
               _vm._v(" "),
               _c(
-                "button",
+                "a",
+                {
+                  staticClass: "btn btn-warning",
+                  attrs: { href: "#formulaire" },
+                  on: {
+                    click: function($event) {
+                      _vm.updatePost(post)
+                    }
+                  }
+                },
+                [_vm._v("Modifier")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
                 {
                   staticClass: "btn btn-danger",
                   on: {
@@ -66932,7 +66989,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("Delete")]
+                [_vm._v("Effacer")]
               )
             ])
           ])
@@ -67021,6 +67078,43 @@ var staticRenderFns = [
         _c("div", { staticClass: "container" }, [
           _c("a", { staticClass: "navbar-brand", attrs: { href: "" } }, [
             _vm._v("SHAREABAR")
+          ]),
+          _vm._v(" "),
+          _c("ul", { staticClass: "navbar-nav mr-auto" }, [
+            _c("li", { staticClass: "nav-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: { href: "http://localhost:8000/api" }
+                },
+                [_vm._v("Home")]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "nav-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: { href: "http://localhost:8000/api/bar" }
+                },
+                [_vm._v("BARS")]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("ul", { staticClass: "nav navbar-nav navbar-right" }, [
+            _c("li", { staticClass: "pull-right" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: { href: "http://localhost/lsapp/public/" }
+                },
+                [_vm._v("Developpement")]
+              )
+            ])
           ])
         ])
       ]
@@ -67041,6 +67135,298 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 173 */,
+/* 174 */,
+/* 175 */,
+/* 176 */,
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(137)
+/* script */
+var __vue_script__ = __webpack_require__(178)
+/* template */
+var __vue_template__ = __webpack_require__(179)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\Index.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-384052eb", Component.options)
+  } else {
+    hotAPI.reload("data-v-384052eb", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 178 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            posts: [],
+            post: {
+                id: '',
+                user_id: '1',
+                title: '',
+                body: '',
+                date: '',
+                cover_image: ''
+            },
+            post_id: '',
+            pagination: {},
+            edit: false
+        };
+    },
+    created: function created() {
+        this.fetchPosts();
+    },
+
+
+    methods: {
+        fetchPosts: function fetchPosts(page_url) {
+            var _this = this;
+
+            var vm = this;
+            page_url = page_url || 'http://localhost:8000/api/posts';
+            fetch(page_url).then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                _this.posts = res.data;
+                vm.makePagination(res.meta, res.links);
+            }).catch(function (err) {
+                return console.log(err);
+            });
+        },
+        makePagination: function makePagination(meta, links) {
+            var pagination = {
+                current_page: meta.current_page,
+                last_page: meta.last_page,
+                next_page_url: links.next,
+                prev_page_url: links.prev
+            };
+
+            this.pagination = pagination;
+        }
+    }
+});
+
+/***/ }),
+/* 179 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c("div", { staticClass: "container" }, [
+      _c("div", { staticClass: "jumbotron text-center" }, [
+        _c("h1", [_vm._v("SHARE A BAR")]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            'Bienvenue sur l\'application "SHARE A BAR" qui reprend vos bar favori.'
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "album py-5 bg-light" }, [
+          _c("div", { staticClass: "container" }, [
+            _c("nav", { attrs: { "aria-label": "Page navigation example" } }, [
+              _c("ul", { staticClass: "pagination" }, [
+                _c(
+                  "li",
+                  {
+                    staticClass: "page-item",
+                    class: [{ disabled: !_vm.pagination.prev_page_url }]
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            _vm.fetchPosts(_vm.pagination.prev_page_url)
+                          }
+                        }
+                      },
+                      [_vm._v("Précedent")]
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c("li", { staticClass: "page-item disabled" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "page-link text-dark",
+                      attrs: { href: "#" }
+                    },
+                    [
+                      _vm._v(
+                        "Page " +
+                          _vm._s(_vm.pagination.current_page) +
+                          " à " +
+                          _vm._s(_vm.pagination.last_page)
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "li",
+                  {
+                    staticClass: "page-item",
+                    class: [{ disabled: !_vm.pagination.next_page_url }]
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            _vm.fetchPosts(_vm.pagination.next_page_url)
+                          }
+                        }
+                      },
+                      [_vm._v("Suivant")]
+                    )
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "row" },
+              _vm._l(_vm.posts, function(post) {
+                return _c("div", { key: post.id, staticClass: "col-md-4" }, [
+                  _c("div", { staticClass: "card-text" }, [
+                    _c("h3", [_vm._v(_vm._s(post.title))])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "card mb-4 box-shadow" }, [
+                    _c("img", {
+                      staticClass: "card-img-top",
+                      staticStyle: {
+                        height: "225px",
+                        width: "100%",
+                        display: "block"
+                      },
+                      attrs: {
+                        alt: "Thumbnail [100%x225]",
+                        "data-src":
+                          "holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail",
+                        src:
+                          "http://localhost/lsapp/public/storage/cover_images/" +
+                          post.image
+                      }
+                    })
+                  ])
+                ])
+              })
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("p"),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "Pour vous voir l'ensemble des bars présent sur l'application, cliquez sur \"BAR\""
+          )
+        ]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            'Pour vous inscrire et partager vos Bar cliquez sur "Développement"'
+          )
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-384052eb", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

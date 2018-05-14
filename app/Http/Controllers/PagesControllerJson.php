@@ -10,4 +10,9 @@ class PagesControllerJson extends Controller
         //return view("pages.index", compact ("title"));
         return view("index");
     }
+
+    public function bar(){
+        //return view("pages.index", compact ("title"));
+        return view("vue.index");
+    }
 }

@@ -11,6 +11,9 @@ import VueRouter from 'vue-router';
 axios.defaults.baseURL = "http://localhost:8000/api";
 Vue.use(VueAxios, axios);
 
+import Index from './components/Index.vue';
+import Posts from './components/Posts.vue';
+
 Vue.use(VueRouter)
 
 require('./bootstrap');
@@ -24,9 +27,25 @@ require('./bootstrap');
  */
 
 Vue.component('posts', require('./components/Posts.vue'));
+Vue.component('index', require('./components/Index.vue'));
 Vue.component('navbar', require('./components/Navbar.vue'));
 
-const app = new Vue({
-    el: '#app'
-});
+const router = new VueRouter({
+  routes: [
+    {
+      path: "/",
+      name: "Home",
+      component: Index
+    },
+    {
+      path: "/posts",
+      name: "Bar",
+      component: Posts
+    }
+  ]
+})
 
+const app = new Vue({
+    el: '#app',
+    router
+});
